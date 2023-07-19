@@ -74,26 +74,28 @@ app.post('/logout', (req,res) => {
 });
 
 app.post('/post', uploadMiddleware.single('file'), async (req,res) => {
-  console.log(req.file);
-  const {originalname,path} = req.file;
-  const parts = originalname.split('.');
-  const ext = parts[parts.length - 1];
-  const newPath = path+'.'+ext;
-  fs.renameSync(path, newPath);
+  // console.log("jlkfdjaslfjlkdjkl");
+  // const {originalname,path} = req.file;
+  // const parts = originalname.split('.');
+  // const ext = parts[parts.length - 1];
+  // const newPath = path+'.'+ext;
+  // fs.renameSync(path, newPath);
 
-  const {token} = req.cookies;
-  jwt.verify(token, secret, {}, async (err,info) => {
-    if (err) throw err;
-    const {title,summary,content} = req.body;
+  // const {token} = req.cookies;
+  // jwt.verify(token, secret, {}, async (err,info) => {
+  //   if (err) throw err;
+    const {title,summary,content, author, cover} = req.body;
     const postDoc = await Post.create({
       title,
       summary,
       content,
-      cover:newPath,
-      author:info.id,
+      author,
+      cover
+      // cover:newPath,
+      // author:info.id,
     });
     res.json(postDoc);
-  });
+  // });
 
 });
 
@@ -155,6 +157,8 @@ app.get('/post/:id', async (req, res) => {
   const postDoc = await Post.findById(id).populate('author', ['username']);
   res.json(postDoc);
 });
+
+
 
 const port = process.env.PORT || 8080;
 app.listen(8080, () => {
